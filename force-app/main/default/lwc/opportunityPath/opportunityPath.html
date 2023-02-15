@@ -1,0 +1,127 @@
+<template>
+    <div class="slds-path slds-path_has-coaching slds-is-expanded slds-box slds-theme_default" >
+        <!-- <div class="slds-path"> -->
+        <div class="slds-grid slds-path__track">
+            <div class="slds-grid slds-path__scroller-container">
+                <template if:true={showDetails}>
+                    <button onclick={handleShowDetails} disabled={disableDetails} class="slds-button slds-button_icon slds-button_icon-border-filled slds-path__trigger slds-path__trigger_open" title="Show Less" aria-expanded="true" aria-controls="path-coaching-2">
+                        <svg class="slds-button__icon" aria-hidden="true">
+                        <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                        </svg>
+                        <span class="slds-assistive-text">Show Less</span>
+                    </button>
+                </template>
+                <template if:false={showDetails}>
+                    <button onclick={handleShowDetails} disabled={disableDetails} class="slds-button slds-button_icon slds-button_icon-border-filled slds-path__trigger" title="Show More" aria-expanded="false" aria-controls="path-coaching-1">
+                        <svg class="slds-button__icon" aria-hidden="true">
+                        <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#chevronright"></use>
+                        </svg>
+                        <span class="slds-assistive-text">Show More</span>
+                    </button>
+                </template>
+                <div class="slds-path__scroller">
+                    <div class="slds-path__scroller_inner">
+                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                            <template if:true={options}>
+                                <template for:each={options} for:item="option">
+                                    <li id={option.key} onmouseover={mouseOver} onclick={statusSelected} onmouseout={mouseOut} key={option.key} class={option.classList} data-value={option.key} role="presentation">
+                                        <a data-value={option.key} aria-selected="false" class="slds-path__link" href="javascript:void(0);" id={option.key} role="option" tabindex="0">
+                                            <span class="slds-path__stage">
+                                                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                                    <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#check"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">{option.key}</span>
+                                                </span>
+                                            <span class="slds-path__title">{option.key}</span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-path__action">
+                <span class="slds-path__stage-name">Stage: Unqualified</span>
+                <button onclick={handleMarkAsSelected} class="slds-button slds-button_brand slds-path__mark-complete">Mark as Current Stage</button>
+            </div>
+            
+            <template for:each={options} for:item="option">
+                <template if:true={option.value}>
+                    <div key={option.key} id={option.id} class="slds-popover slds-popover_tooltip slds-nubbin_top" role="tooltip" style="margin: 0 auto;position:absolute;display: none;">
+                        <div class="slds-popover__body" style="text-align: center">{option.value}</div>
+                    </div>
+                </template>
+                <template if:false={option.value}>
+                    <div key={option.key} id={option.id} class="slds-popover slds-popover_tooltip slds-nubbin_top" role="tooltip" style="margin: 0 auto;position:absolute;display: none;">
+                        <div class="slds-popover__body" style="text-align: center">{option.key}</div>
+                    </div>
+                </template>
+            </template>
+        </div>
+        <template if:true={showDetails} >
+            <div class="slds-path__content" id="path-coaching-2">
+                <div class="slds-path__coach slds-grid">
+                    <template if:true={showKeyFields} >
+                        <div class="slds-path__keys" >
+                            <div class="slds-grid slds-grid_align-spread slds-path__coach-title">
+                            <h2>Key Fields This Stage</h2>
+                            <!-- <button class="slds-button slds-path__coach-edit slds-text-body_small">Edit</button> -->
+                            </div>
+                            <div class="slds-form" role="list">
+                                <lightning-record-edit-form record-id={recordId} object-api-name="Opportunity">
+                                    <template for:each={fields} for:item="field">
+                                        <div key={field}  if:false={showEditField} class="slds-form__row">
+                                            <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                <div class="slds-form-element__control slds-grid">
+                                                    <div class="slds-col slds-size_11-of-12 ">
+                                                        <lightning-output-field field-name={field}>
+                                                        </lightning-output-field>
+                                                    </div>
+                                                    <div class="slds-col slds-size_1-of-12">
+                                                        <lightning-button-icon icon-name="utility:edit" onclick={handleEdit}>
+                                                        </lightning-button-icon>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                        <div key={field} class="slds-grid" if:true={showEditField}>
+                                            <div class="slds-col slds-size_1-of-1">
+                                                <lightning-input-field field-name={field}>
+                                                </lightning-input-field>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <div if:true={showEditField} style="text-align: center">
+                                        <lightning-button onclick={handleEdit} name="cancel" label="Cancel">
+                                        </lightning-button>
+                                        <lightning-button type="submit" name="submit" label="Save">
+                                        </lightning-button>
+                                    </div>
+                                </lightning-record-edit-form>
+                            </div>
+                        </div>
+                    </template>
+                    <template if:true={showGuidance} >
+                        <div class="slds-path__guidance">
+                            <h2 class="slds-path__coach-title">Guidance for Successs</h2>
+                            <div class="slds-text-longform slds-path__guidance-content">
+                            
+                                <lightning-formatted-rich-text value={guidanceForSuccess}></lightning-formatted-rich-text>
+
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>  
+        </template>
+    </div>
+    
+    <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="Loading" variant="inverse"></lightning-spinner>
+    </template>
+
+</template>
